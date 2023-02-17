@@ -1,0 +1,55 @@
+{% include "header.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+    <section id="features">
+    <div class="container-fluid">
+      <div class="row mid">
+      {% for movie in movies %}
+        <div class="col-lg-2 col-md-6 col-sm-6  middle">
+  <div class="card" >
+    <div class="front" style="background-image: url('{{ movie.img_url }}');">
+        <p class="large">{{ movie.ranking }}</p>
+    </div>
+    <div class="back">
+     <div>
+      <div class="title">{{ movie.title }} <span class="release_date">({{ movie.year }})</span>
+      </div>
+        <div class="rating">
+            <label>{{ movie.rating }}</label>
+          <i class="fas fa-star star"></i>
+        </div>
+        <p class="overview">
+            {{movie.description}}        </p>
+        {% if current_user.is_authenticated %}
+
+        <a href="{{url_for('edit',id=movie.id)}}" class="button ">Update</a>
+        <a href="{{url_for('delete',id=movie.id)}}" class="button delete-button">Delete</a>
+         {% else %}
+        <a href="{{movie.site_url}}" class="button "> More</a>
+        <a href="{{url_for('delete',id=movie.id)}}" class="button delete-button">Recommend</a>
+         {% endif %}
+
+      </div>
+
+      </div>
+    </div>
+        </div>
+             {% endfor %}
+
+      </div>
+    </div>
+  </section>
+
+
+
+  </div>
+<div class="container text-center add">
+
+           {% if admin %}
+            <a href="{{ url_for('add') }}" class="button">Add Recommendation</a>
+              {% endif %}
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
+{% endblock %}

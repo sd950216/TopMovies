@@ -1,0 +1,13 @@
+{% include "header.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+
+{% block content %}
+    <h1 class="Edit-heading">Recommendation Title</h1>
+
+<div class="content">
+    <p class="description">Edit Recommendation Rating</p>
+        {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}

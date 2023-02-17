@@ -1,0 +1,47 @@
+{% include "header.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+
+{% block content %}
+    <h1 class="Edit-heading">Requests Title</h1>
+
+
+<div class="content">
+ <div class="col-lg-2 col-md-6 col-sm-6  middle">
+  <div class="card" >
+    <div class="front" style="background-image: url('{{ media.img_url }}');">
+        <p class="large">{{ media.ranking }}</p>
+    </div>
+    <div class="back">
+     <div>
+      <div class="title">{{ media.title }} <span class="release_date">({{ media.year }})</span>
+      </div>
+        <div class="rating">
+            <label>{{ media.rating }}</label>
+          <i class="fas fa-star star"></i>
+        </div>
+        <p class="overview">
+            {{media.description}}        </p>
+
+        {% if current_user.is_authenticated %}
+
+        <a href="{{url_for('select', media_id=media.media_id, media_type=media.media_type,
+        title=media.title, year=media.year, rating=media.rating, description=media.description,
+         img_url=media.img_url)
+
+}}" class="button ">Add</a>
+        <a href="{{url_for('delete',id=media.id)}}" class="button delete-button">Delete</a>
+         {% else %}
+        <a href="{{media.site_url}}" class="button "> More</a>
+        <a href="{{url_for('delete',id=media.id)}}" class="button delete-button">Recommend</a>
+         {% endif %}
+      </div>
+
+      </div>
+    </div>
+        </div>
+    <p class="description">Edit Recommendation Rating</p>
+        {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}

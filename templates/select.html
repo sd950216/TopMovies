@@ -1,0 +1,19 @@
+{% include "header.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block content %}
+<div class="container">
+    <h1 class="heading">Select Recommendation</h1>
+  <p>
+        {% if data==[] %}
+        <p class="error">not found please try again</p>
+        {% endif %}
+          {% for item in data %}
+                  <a href="{{ url_for('select',movie_id=item.media_id,title=item.name,media_type=item.media_type,year=item.year,rating=item.vote_average,description=item.overview,img_url=item.poster_path) }}"> {{ item.name}} - {{ item.year}}</a>
+              <br>
+          {% endfor %}
+  </p>
+
+</div>
+{% endblock %}
