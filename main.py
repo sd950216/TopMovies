@@ -157,7 +157,6 @@ def sort_movies(Class):
         # This line gives each movie a new ranking reversed from their order in all_movies
         all_movies[i].ranking = i + 1
     db.session.commit()
-    print(all_movies)
     return all_movies
 
 
@@ -207,7 +206,6 @@ def update_database(database_name, page, **kwargs):
     db.session.commit()
     discover_data = search('database_name', database_name, page, to_discover=kwargs['to_discover'])
     for item in discover_data:
-        print(f'{database_name}')
         media_id = item['media_id']
         movie_title = item['name']
         movie_year = item['year']
