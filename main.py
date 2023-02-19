@@ -356,7 +356,7 @@ def add():
                     movie['poster_path'] = "".join(
                     ["https://www.themoviedb.org/t/p/w220_and_h330_face", movie['poster_path']])
                     movie.update({'site_url': f"https://www.themoviedb.org/{movie['media_type']}"
-                                              f"/{movie['media_id']}/{movie['name']}"})
+                                              f"/{movie['media_id']}-{movie['name']}"})
                     movie['vote_average'] = f"{round(movie['vote_average'],1)}"
                 except:
                     movie = "person"
