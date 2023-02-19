@@ -22,13 +22,17 @@
 .large {
      font-size: 3rem;
 }
+.masthead{
+	margin: 3% 0;
+	text-align: center;
+}
  .content {
 	 margin: 0 auto;
 	 text-align: center;
 	 justify-content: center;
 	 align-items: center;
 	 flex-wrap: wrap;
-	 max-width: 20%;
+	 max-width: 40%;
 }
 
  p.overview {
@@ -96,6 +100,9 @@
 	 	 .heading{
 		 font-size: 1.58rem;
     }
+	.content{
+		max-width: 80%;
+	}
 }
  @media screen and (max-width: 575px) {
 	 .card {
