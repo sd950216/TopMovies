@@ -21,10 +21,28 @@
 <div class="content">
     <div class="container">
   <hr class="my-4">
-  <p>Are You Sure You Want To Delete : {{ movie.title }}</p>
+  <p>Are You Sure You Want To Delete :
+          <div class="card " style="max-width: 300px">
+    <div class="front" style="background-image: url('{{ movie.img_url }}');">
+    </div>
+    <div class="back">
+     <div>
+      <div class="title">{{ movie.title }} <span class="release_date">({{ movie.year }})</span>
+      </div>
+        <div class="rating">
+            <label>{{ movie.rating }}</label>
+          <i class="fas fa-star star"></i>
+        </div>
+        <p class="overview">
+            {{movie.description}}        </p>
+
+      </div>
+
+      </div>
+    </div>
     <form action="" method="POST" href="{{ url_for('delete',id=movie.id) }}">
-        <button class="btn btn-primary" type="submit">Yes!</button>
-        <a class="btn btn-danger" href="{{ url_for('home') }}" role="button">NO</a>
+        <button class="btn btn-danger" type="submit">Yes!</button>
+        <a class="btn btn-primary" href="{{ url_for('home') }}" role="button">No</a>
     </form>
 
 </div>
