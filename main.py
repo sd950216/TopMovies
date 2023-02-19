@@ -170,7 +170,7 @@ def filter_data(json_list, **kwargs):
             'poster_path': json_input.get('poster_path', None),
             'vote_average': json_input.get('vote_average', None),
             'media_type': json_input.get('media_type', kwargs['to_discover']),
-            'media_id': json_input.get('id', None)
+            'media_id': json_input.get('id', None),
 
         }
         filtered_list.append(filtered_dict)
@@ -346,7 +346,24 @@ def add():
     form = Addform()
     if request.method == "POST":
         data = search(form.movie_title.data, 'multi', 1, to_discover='none')
-        return render_template('select.html', data=data)
+        temp_data = []
+        # Loop through the list of dictionaries in reverse order
+        for movie in data:
+            if movie['media_type'] == 'person':
+                movie = "person"
+            else:
+                try:
+                    movie['poster_path'] = "".join(
+                    ["https://www.themoviedb.org/t/p/w220_and_h330_face", movie['poster_path']])
+                    movie.update({'site_url': f"https://www.themoviedb.org/{movie['media_type']}"
+                                              f"/{movie['media_id']}/{movie['name']}"})
+                    movie['vote_average'] = f"{round(movie['vote_average'],1)}"
+                except:
+                    movie = "person"
+            if movie != "person":
+                temp_data.append(movie)
+
+        return render_template('select.html', data=temp_data)
 
     return render_template("add.html", form=form)
 
@@ -370,6 +387,7 @@ def select():
     movie_selected = Recommendation.query.filter_by(title=movie_title).first()
     movie_id = movie_selected.id
     return redirect(url_for('edit', id=movie_id))
+
 
 #
 # @app.route("/request/<site>", methods=['GET', 'POST'])
