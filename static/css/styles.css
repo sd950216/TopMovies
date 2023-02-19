@@ -88,15 +88,32 @@
 	 background-color: #393E46;
 }
  @media screen and (max-width: 800px) {
-	 .card {
-		 width: calc(50% - 3rem);
-	}
+	 .middle{
+		 margin-bottom: 5%;
+
+	 }
+
+	 	 .heading{
+		 font-size: 1.58rem;
+    }
 }
- @media screen and (max-width: 500px) {
+ @media screen and (max-width: 575px) {
 	 .card {
-		 width: 100%;
+		 width: 80%;
 	}
-}
+	 .heading{
+		 font-size: 0.9rem;
+    }
+	 .navbar-brand{
+		 padding: 0;
+		 margin-right: 0;
+	 }
+	 	 .middle{
+		 margin-bottom: 0;
+
+	 }
+ }
+
  .front, .back {
 	 display: flex;
 	 border-radius: 6px;
