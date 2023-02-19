@@ -270,7 +270,10 @@
 	background: rgba(230, 87, 230, 0.25) linear-gradient(135deg, #e61a46, #e61a1a);
 }
 .error{
-	margin-left:3%;
+	  background: linear-gradient(to right, #4facfe, #1a57e6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+	margin:3%;
 	font-weight: bold;
 }
 .btn-default {

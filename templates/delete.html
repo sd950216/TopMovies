@@ -18,13 +18,13 @@
     </div>
   </header>
 
-<div class="jumbotron text-center">
+<div class="content">
     <div class="container">
   <hr class="my-4">
-  <p style="color: #000">Are You Sure You Want To Delete : {{ movie.title }}</p>
+  <p>Are You Sure You Want To Delete : {{ movie.title }}</p>
     <form action="" method="POST" href="{{ url_for('delete',id=movie.id) }}">
-        <button class="btn btn-warning btn-lg left" type="submit">Yes!</button>
-        <a class="btn btn-warning btn-lg right" href="{{ url_for('home') }}" role="button">NO</a>
+        <button class="btn btn-primary" type="submit">Yes!</button>
+        <a class="btn btn-danger" href="{{ url_for('home') }}" role="button">NO</a>
     </form>
 
 </div>
