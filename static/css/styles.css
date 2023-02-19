@@ -13,7 +13,7 @@
 	 padding: 0;
 	 height: 100vh;
 	 background-attachment: fixed;
-	   background-image: url('https://telegra.ph/file/00c6cda972b1663b91880.png');
+	   background-image: url('/static/background.png');
 	  background-repeat: no-repeat;
 	  background-size: cover;
 	 	 color: #dee2e6;
