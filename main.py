@@ -311,7 +311,7 @@ def trending(page):
 @addminonly
 def edit():
     form = Movieform()
-    if request.method == "POST":
+    if request.method == 'POST' and form.validate():
         # UPDATE RECORD
         movie_id = request.args.get('id')
         movie_to_update = Recommendation.query.get(movie_id)
@@ -344,7 +344,7 @@ def delete():
 @addminonly
 def add():
     form = Addform()
-    if request.method == "POST":
+    if request.method == 'POST' and form.validate():
         data = search(form.movie_title.data, 'multi', 1, to_discover='none')
         temp_data = []
         # Loop through the list of dictionaries in reverse order
@@ -408,6 +408,14 @@ def select():
 #     movie_id = request.args.get('id')
 #     movie_selected = Recommendation.query.get(movie_id)
 #     return render_template("edit.html", movie=movie_selected, form=form)
+
+@app.route('/cancel')
+@addminonly
+def cancel():
+    return redirect(url_for('home'))
+
+
+
 
 
 if __name__ == '__main__':
