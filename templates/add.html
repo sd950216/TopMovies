@@ -4,7 +4,15 @@
 
 
 {% block content %}
+          {% if session['lang'] == 'en' %}
         <h1 class="Edit-heading">Add a Recommendation</h1>
+    {% elif session['lang'] == 'ar' %}
+            <h1 class="Edit-heading"> البحث عن فيلم او مسلسل</h1>
+    {% endif %}
+
+
+
+
 
 <div class="content">
             {{ wtf.quick_form(form) }}

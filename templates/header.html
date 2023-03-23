@@ -23,6 +23,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto">
+      {% if session['lang'] == 'en' %}
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
         </li>
@@ -40,18 +41,14 @@
         </li>
        <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {% if session['lang'] == 'ar'%}
-              عربى
-              {% elif  session['lang'] == 'en'%}
                 English
-              {% endif %}
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" href="{{ url_for('change_language',language="ar") }}">عربى</a></li>
             <li><a class="dropdown-item" href="{{ url_for('change_language',language="en") }}">EN</a></li>
           </ul>
         </li>
-   {% if current_user.is_authenticated %}
+             {% if current_user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
             </li>
@@ -60,6 +57,42 @@
               <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
             </li>
         {% endif %}
+      {% elif session['lang'] == 'ar' %}
+              <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">الرئيسية</a>
+        </li>
+          <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            تصفح
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('rest',site="disc",discover_type="movie") }}">افلام</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('rest',site="disc",discover_type="tv") }}">مسلسلات</a></li>
+          </ul>
+        </li>
+          <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('rest',site="trend",discover_type="1") }}">الترند</a>
+        </li>
+       <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                عربى
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('change_language',language="ar") }}">عربى</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('change_language',language="en") }}">EN</a></li>
+          </ul>
+        </li>
+   {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">تسجيل الخروج</a>
+            </li>
+        {% else: %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">تسجيل الدخول</a>
+            </li>
+        {% endif %}
+            {% endif %}
+
 
       </ul>
     </div>
