@@ -1,7 +1,6 @@
 from functools import wraps
-
 import requests
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash,session
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -103,7 +102,6 @@ class Requests(db.Model, Base):
 
 # db.drop_all()
 # db.create_all()
-lang = 'ar'
 
 
 def addminonly(func):
@@ -184,6 +182,7 @@ def filter_data(json_list, **kwargs):
 
 
 def search(query, query_type, page, **kwargs):
+    lang = session.get('lang', 'not_set')
     api_key = '99944e74de511cfa307148e77ddb77d4'
     base_urls = {
         'discover': f'https://api.themoviedb.org/3/discover/{kwargs["to_discover"]}?api_key={api_key}&language={lang}&sort_by=popularity'
@@ -246,11 +245,11 @@ def home():
 @app.route('/<language>')
 def change_language(language):
     previous_url = request.referrer
-    global lang
     if language == 'en':
-        lang = 'en'
-    else:
-        lang = 'ar'
+        session['lang'] = 'en'
+
+    elif language == 'ar':
+        session['lang'] = 'ar'
     return redirect(previous_url)
 
 
