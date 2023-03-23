@@ -1,12 +1,14 @@
 from functools import wraps
+
 import requests
 from flask import Flask, render_template, redirect, url_for, request, flash
 from flask_bootstrap import Bootstrap
+from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import false
-from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.declarative import declarative_base
+from werkzeug.security import check_password_hash
 
 from forms import LoginForm, Addform, Movieform
 
@@ -14,7 +16,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['WTF_CSRF_ENABLED'] = False  # disable CSRF protection
 
+csrf = CSRFProtect(app)
 Bootstrap(app)
 db = SQLAlchemy(app)
 app.app_context().push()
@@ -99,6 +103,7 @@ class Requests(db.Model, Base):
 
 # db.drop_all()
 # db.create_all()
+lang = 'ar'
 
 
 def addminonly(func):
@@ -181,9 +186,9 @@ def filter_data(json_list, **kwargs):
 def search(query, query_type, page, **kwargs):
     api_key = '99944e74de511cfa307148e77ddb77d4'
     base_urls = {
-        'discover': f'https://api.themoviedb.org/3/discover/{kwargs["to_discover"]}?api_key={api_key}&language=en-US&sort_by=popularity'
-                    f'.desc&include_adult=false&include_video=false&page={page}&with_watch_monetization_types=flatrate',
-        'trending': f'https://api.themoviedb.org/3/trending/all/day?api_key={api_key}&page={page}',
+        'discover': f'https://api.themoviedb.org/3/discover/{kwargs["to_discover"]}?api_key={api_key}&language={lang}&sort_by=popularity'
+                    f'.desc&include_adult=false&include_video=false&page={page}',
+        'trending': f'https://api.themoviedb.org/3/trending/all/day?api_key={api_key}&page={page}&language={lang}',
         'search': 'https://api.themoviedb.org/3/search/multi',
     }
     if query_type in ('discover', 'trending'):
@@ -193,7 +198,8 @@ def search(query, query_type, page, **kwargs):
             'api_key': api_key,
             'query': query,
             'page': 1,
-            'include_adult': 'false'
+            'include_adult': 'false',
+            'language': lang
         }
         response = requests.get(url=base_urls['search'], params=parameters)
     data = response.json()['results']
@@ -212,7 +218,10 @@ def update_database(database_name, page, **kwargs):
         movie_rating = round(item['vote_average'], 1)
         movie_description = item['overview']
         media_type = item['media_type']
-        movie_img_url = "".join(["https://www.themoviedb.org/t/p/w220_and_h330_face/", item['poster_path']])
+        try:
+            movie_img_url = "".join(["https://www.themoviedb.org/t/p/w220_and_h330_face/", item['poster_path']])
+        except:
+            movie_img_url = 'https://telegra.ph/file/ef7a1fe2c26acfdfc8832.jpg'
         site_url = f'https://www.themoviedb.org/{media_type}/{media_id}-{movie_title}'
         execute(media_id, media_type, database_name, movie_title,
                 movie_year.split('-')[0],
@@ -232,6 +241,17 @@ def home():
         admin = True
     movies = sort_movies('movie')
     return render_template("index.html", movies=movies, admin=admin)
+
+
+@app.route('/<language>')
+def change_language(language):
+    previous_url = request.referrer
+    global lang
+    if language == 'en':
+        lang = 'en'
+    else:
+        lang = 'ar'
+    return redirect(previous_url)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -354,10 +374,10 @@ def add():
             else:
                 try:
                     movie['poster_path'] = "".join(
-                    ["https://www.themoviedb.org/t/p/w220_and_h330_face", movie['poster_path']])
+                        ["https://www.themoviedb.org/t/p/w220_and_h330_face", movie['poster_path']])
                     movie.update({'site_url': f"https://www.themoviedb.org/{movie['media_type']}"
                                               f"/{movie['media_id']}-{movie['name']}"})
-                    movie['vote_average'] = f"{round(movie['vote_average'],1)}"
+                    movie['vote_average'] = f"{round(movie['vote_average'], 1)}"
                 except:
                     movie = "person"
             if movie != "person":
@@ -413,9 +433,6 @@ def select():
 @addminonly
 def cancel():
     return redirect(url_for('home'))
-
-
-
 
 
 if __name__ == '__main__':

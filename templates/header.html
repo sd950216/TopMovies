@@ -38,6 +38,15 @@
           <li class="nav-item">
           <a class="nav-link" href="{{ url_for('rest',site="trend",discover_type="1") }}">Trending</a>
         </li>
+       <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Language
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('change_language',language="ar") }}">عربى</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('change_language',language="en") }}">EN</a></li>
+          </ul>
+        </li>
    {% if current_user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
