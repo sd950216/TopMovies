@@ -1,6 +1,6 @@
 from functools import wraps
 import requests
-from flask import Flask, render_template, redirect, url_for, request, flash,session
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
@@ -104,19 +104,21 @@ class Requests(db.Model, Base):
 # db.create_all()
 
 
-def addminonly(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        if current_user.is_authenticated:
-            is_admin = current_user.id == 1
-            if not is_admin:
-                flash("You are not authorized to access this page")
-                return redirect(url_for('login'))
-            return func(*args, **kwargs)
-        flash("You are not authorized to access this page")
-        return redirect(url_for('login'))
+def admin_only(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return _handle_unauthorized()
+        if current_user.id != 1:
+            return _handle_unauthorized('You are not authorized to access this page')
+        return view_func(*args, **kwargs)
 
-    return decorated_function
+    return wrapper
+
+
+def _handle_unauthorized(message='You are not authorized to access this page'):
+    flash(message)
+    return redirect(url_for('login'))
 
 
 def logged_in(func):
@@ -327,7 +329,7 @@ def trending(page):
 
 
 @app.route("/edit", methods=['GET', 'POST'])
-@addminonly
+@admin_only
 def edit():
     form = Movieform()
     if request.method == 'POST' and form.validate():
@@ -345,7 +347,7 @@ def edit():
 
 
 @app.route('/delete', methods=['GET', 'POST'])
-@addminonly
+@admin_only
 def delete():
     if request.method == "POST":
         # UPDATE RECORD
@@ -360,7 +362,7 @@ def delete():
 
 
 @app.route('/add', methods=['GET', 'POST'])
-@addminonly
+@admin_only
 def add():
     form = Addform()
     if request.method == 'POST' and form.validate():
@@ -388,7 +390,7 @@ def add():
 
 
 @app.route('/select', methods=['GET', 'POST'])
-@addminonly
+@admin_only
 def select():
     movie_title = request.args.get('title')
     movie_year = request.args.get('year')
@@ -429,7 +431,7 @@ def select():
 #     return render_template("edit.html", movie=movie_selected, form=form)
 
 @app.route('/cancel')
-@addminonly
+@admin_only
 def cancel():
     return redirect(url_for('home'))
 

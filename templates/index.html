@@ -48,7 +48,7 @@
            {% if admin %}
     {% if session['lang'] == 'en' %}
             <a href="{{ url_for('add') }}" class="button">Add Recommendation</a>
-                    {% elif  session['lang'] == 'ar' %}
+                    {% else %}
                     <a href="{{ url_for('add') }}" class="button">أضف المزيد</a>
 
               {% endif %}
