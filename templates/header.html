@@ -14,9 +14,15 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="https://motrap2002.pythonanywhere.com/">
-      <img src="https://telegra.ph/file/5f61b3e51d033ecbbe32a.png" alt="..." height="36">
+    {% if current_user.is_authenticated %}
+    <a class="navbar-brand" href="{{url_for('home')}}">
+    <img src="{{ session["pic"] }}" alt="Avatar" height="36">
     </a>
+    {% else %}
+  <a class="navbar-brand" href="https://motrap2002.pythonanywhere.com/">
+      <img src="{{ session.pic}}" alt="..." height="36">
+    </a>
+  {% endif %}
   <h1 class="heading">My Top Movies & Shows</h1>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -53,9 +59,15 @@
               <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
             </li>
         {% else: %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
-            </li>
+         <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Login
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('login') }}">Login</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('register') }}">Register</a></li>
+          </ul>
+        </li>
         {% endif %}
       {% else %}
               <li class="nav-item">
@@ -87,9 +99,15 @@
               <a class="nav-link" href="{{ url_for('logout') }}">تسجيل الخروج</a>
             </li>
         {% else: %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('login') }}">تسجيل الدخول</a>
-            </li>
+                 <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                تسجيل الدخول
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('login') }}">تسجيل الدخول</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('register') }}">إنشاء حساب</a></li>
+          </ul>
+        </li>
         {% endif %}
             {% endif %}
 

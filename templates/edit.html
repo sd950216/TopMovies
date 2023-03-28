@@ -4,10 +4,16 @@
 
 
 {% block content %}
-    <h1 class="Edit-heading">Recommendation Title</h1>
+    {% if session['lang'] == 'en' %}
+        <h1 class="Edit-heading">Recommendation Title</h1>
 
 <div class="content">
     <p class="description">Edit Recommendation Rating</p>
+    {% else %}
+            <h1 class="Edit-heading">تعديل التقيم</h1>
+
+<div class="content">
+    {% endif %}
           {{ form.csrf_token }}
         {{ wtf.quick_form(form,button_map={'submit': 'right'}) }}
         <a class="btn btn-default cancel" href="{{ url_for('cancel') }}" role="button">Cancel </a>

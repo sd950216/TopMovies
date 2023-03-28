@@ -29,7 +29,7 @@
                  {% if session['lang'] == 'en' %}
                              <a href="{{ url_for('select',movie_id=movie.media_id,title=movie.name,media_type=movie.media_type,year=movie.year,rating=movie.vote_average,description=movie.overview,img_url=movie.poster_path) }}" class="button ">Add</a>
         <a href="{{movie.site_url}}" class="button right "> More Info</a>
-    {% elif session['lang'] == 'ar' %}
+    {% else %}
              <a href="{{ url_for('select',movie_id=movie.media_id,title=movie.name,media_type=movie.media_type,year=movie.year,rating=movie.vote_average,description=movie.overview,img_url=movie.poster_path) }}" class="button ">أضف</a>
         <a href="{{movie.site_url}}" class="button right "> More Info</a>
 
