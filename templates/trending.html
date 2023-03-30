@@ -26,10 +26,9 @@
 
         <a href="{{url_for('select', movie_id=movie.media_id, media_type=movie.media_type,title=movie.title, year=movie.year, rating=movie.rating, description=movie.description, img_url=movie.img_url)
 }}" class="button ">Add</a>
-        <a href="{{url_for('delete',id=movie.id)}}" class="button delete-button">Delete</a>
+        <a href="{{movie.site_url}}" class="button right "> More Info</a>
          {% else %}
         <a href="{{movie.site_url}}" class="button "> More</a>
-        <a href="{{url_for('delete',id=movie.id)}}" class="button delete-button">Recommend</a>
          {% endif %}
       </div>
 

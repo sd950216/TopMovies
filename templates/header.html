@@ -16,7 +16,7 @@
   <div class="container-fluid">
     {% if current_user.is_authenticated %}
     <a class="navbar-brand" href="{{url_for('home')}}">
-    <img src="{{ session["pic"] }}" alt="Avatar" height="36">
+    <img src="https://ui-avatars.com//api/?background=%23285894&color=fff&rounded=True&size=200&name={{ current_user.username }}" alt="Avatar" height="36">
     </a>
     {% else %}
   <a class="navbar-brand" href="https://motrap2002.pythonanywhere.com/">

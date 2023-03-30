@@ -188,10 +188,6 @@ def execute(media_id, media_type, search_type, title, year, description, rating,
     movie_classes = {'trending': Trending, 'discover': Discover, 'movie': Recommendation}
     rounded_rating = round(float(rating), 1)
     movie_class = movie_classes[search_type]
-    # new_media = movie_class(user_id=kwargs['user_id'], media_id=media_id, media_type=media_type, title=title,
-    #                         year=year, description=description,
-    #                         rating=rounded_rating, ranking=ranking,
-    #                         review=review, img_url=img_url, site_url=site_url)
     new_media = movie_class(media_id=media_id, media_type=media_type, title=title,
                             year=year, description=description,
                             rating=rounded_rating, ranking=ranking,
@@ -356,7 +352,6 @@ def generate_avatar(name, size):
 def pfp_update():
     if current_user.is_authenticated:
         session["pic"] = url_for('static', filename=f'/profile_pics/{current_user.username}_avatar.png')
-        print(session["pic"])
     else:
         session['pic'] = 'https://telegra.ph/file/5f61b3e51d033ecbbe32a.png'
 
@@ -392,23 +387,16 @@ def change_language(language):
 def login():
     form = LoginForm(request.form)
     if request.method == 'POST':
-        if form.validate_on_submit():
-            user = User.query.filter_by(email=form.email.data.replace(" ", "")).first()
-            if user:
-                if check_password_hash(user.password, form.password.data):
-                    login_user(user)
-                    pfp_update()
-                    return redirect(url_for('home'))
-                else:
-                    flash('Error: Invalid username or password.')
-                    return render_template('login.html', form=form)
+        if form.validate():
+            user = User.query.filter_by(email=form.email.data).first()
+            if user and check_password_hash(user.password, form.password.data):
+                login_user(user)
+                pfp_update()
+                return redirect(url_for('home'))
             else:
-                flash('Error: Invalid username or password.')
-                return render_template('login.html', form=form)
+                flash('Error: Invalid email or password.')
         else:
             flash('Error: All fields are required.')
-            return render_template('login.html', form=form)
-
     return render_template("login.html", form=form)
 
 
@@ -427,26 +415,56 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 @logged_in
+# def register():
+#     if request.method == 'POST':
+#         form = RegisterForm(request.form)
+#         if form.validate_on_submit():
+#             if User.query.filter_by(email=form.email.data).first():
+#                 flash('Email address already registered.')
+#                 return redirect(url_for('register'))
+#             username = form.username.data.replace(" ", "")
+#             email = form.email.data.replace(" ", "")
+#             password = generate_password_hash(form.password.data)
+#             user = User(username=username, email=email, password=password, role="admin")
+#
+#             db.session.add(user)
+#             db.session.commit()
+#             login_user(user)
+#             try:
+#                 generate_avatar(current_user.username, 200)
+#             except:
+#                 return redirect(url_for('home'))
+#
+#
+#
+#         else:
+#             return render_template('register.html', form=form)
+#     form = RegisterForm()
+#     return render_template("register.html", form=form)
+#
 def register():
     if request.method == 'POST':
         form = RegisterForm(request.form)
-        if form.validate_on_submit():
-            if User.query.filter_by(email=form.email.data).first():
+        if form.validate():
+            if User.query.filter_by(email=form.email.data.replace(" ", "")).first():
                 flash('Email address already registered.')
-                return redirect(url_for('register'))
-            username = form.username.data.replace(" ", "")
-            email = form.email.data.replace(" ", "")
-            password = generate_password_hash(form.password.data)
-            user = User(username=username, email=email, password=password, role="admin")
-
-            db.session.add(user)
-            db.session.commit()
-            login_user(user)
-            generate_avatar(current_user.username, 200)
-
-            return redirect(url_for('home'))
+            else:
+                username = form.username.data.replace(" ", "")
+                email = form.email.data.replace(" ", "")
+                password = generate_password_hash(form.password.data)
+                user = User(username=username, email=email, password=password, role="admin")
+                db.session.add(user)
+                db.session.commit()
+                login_user(user)
+                try:
+                    generate_avatar(current_user.username, 200)
+                except Exception as e:
+                    app.logger.error(f'Error generating avatar for user {current_user.username}: {e}')
+                    flash('Error creating user account. Please try again later.')
+                    return redirect(url_for('home'))
+                return redirect(url_for('home'))
         else:
-            return render_template('register.html', form=form)
+            flash('Error: All fields are required.')
     form = RegisterForm()
     return render_template("register.html", form=form)
 
@@ -557,10 +575,11 @@ def select():
     movie_img_url = "".join(["https://www.themoviedb.org/t/p/w220_and_h330_face/", request.args.get('img_url')])
     media_type = request.args.get("media_type")
     media_id = request.args.get("movie_id")
+    site_url = f"https://www.themoviedb.org/{media_type}/{media_id}-{movie_title}"
     rec = Recommendation(user_id=current_user.id, media_id=media_id, media_type=media_type, title=movie_title,
                          year=movie_year,
                          description=movie_description, rating=movie_rating, ranking=10, img_url=movie_img_url,
-                         site_url="site_url", review="review")
+                         site_url=site_url, review="review")
     db.session.add(rec)
     db.session.commit()
     movie_selected = Recommendation.query.filter_by(user_id=current_user.id, title=movie_title).first()
