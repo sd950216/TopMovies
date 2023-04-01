@@ -370,7 +370,6 @@ def change_language(language):
     previous_url = request.referrer
     if language == 'en':
         session['lang'] = 'en'
-
     elif language == 'ar':
         session['lang'] = 'ar'
     else:
