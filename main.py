@@ -359,12 +359,18 @@ def pfp_update():
 @app.route('/profile')
 @login_required
 def view_profile():
-    # user = User.get_by_username(current_user.username)
     user = current_user.username
-
     if not user:
         flash('User not found')
         return redirect(url_for('index'))
+    try:
+        gender = requests.get(f'https://api.genderize.io/name={current_user.username}').json()['gender']
+        if gender == 'female' or gender == 'null':
+            session['gender'] = 'https://images.unsplash.com/photo-1535982368253-05d640fe0755?fit=crop&w=300&q=80'
+        else:
+            session['gender'] = 'https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?&fit=crop&w=300&q=80'
+    except:
+        session['gender'] = 'https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?&fit=crop&w=300&q=80'
     return render_template('profile.html')
 
 
@@ -415,33 +421,6 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 @logged_in
-# def register():
-#     if request.method == 'POST':
-#         form = RegisterForm(request.form)
-#         if form.validate_on_submit():
-#             if User.query.filter_by(email=form.email.data).first():
-#                 flash('Email address already registered.')
-#                 return redirect(url_for('register'))
-#             username = form.username.data.replace(" ", "")
-#             email = form.email.data.replace(" ", "")
-#             password = generate_password_hash(form.password.data)
-#             user = User(username=username, email=email, password=password, role="admin")
-#
-#             db.session.add(user)
-#             db.session.commit()
-#             login_user(user)
-#             try:
-#                 generate_avatar(current_user.username, 200)
-#             except:
-#                 return redirect(url_for('home'))
-#
-#
-#
-#         else:
-#             return render_template('register.html', form=form)
-#     form = RegisterForm()
-#     return render_template("register.html", form=form)
-#
 def register():
     if request.method == 'POST':
         form = RegisterForm(request.form)
