@@ -1,3 +1,4 @@
+import os
 import random
 import smtplib
 from functools import wraps
@@ -96,13 +97,6 @@ class Recommendation(db.Model, Base):
         self.review = review
 
 
-#
-# rec = Recommendation(user_id=2,media_id=45,media_type='tv',title="title",year=2000,
-#                      description="description",rating=10.1,ranking="ranking",img_url="img_url",site_url="site_url",review="review")
-# db.session.add(rec)
-# db.session.commit()
-
-
 class Trending(db.Model, Base):
     __tablename__ = "Trending"
     id = db.Column(db.Integer, primary_key=True)
@@ -147,10 +141,6 @@ class Searches(db.Model, Base):
     img_url = db.Column(db.String, nullable=False)
     site_url = db.Column(db.String, nullable=False)
     requested_by = db.Column(db.String, nullable=false)
-
-
-# db.drop_all()
-# db.create_all()
 
 
 def admin_only(view_func):
@@ -324,6 +314,21 @@ def home():
     return render_template("index.html", movies=movies)
 
 
+@app.route("/secret", methods=["POST"])
+def setup():
+    api_key = request.form.get("api_key")
+    if api_key == os.environ.get("API_KEY"):
+        db.drop_all()
+        db.create_all()
+        user = User(email='admin@admin.com', password=generate_password_hash(api_key), username='Mo Trap',
+                    role='admin')
+        db.session.add(user)
+        db.session.commit()
+        return "Setup completed successfully", 200
+    else:
+        return "Invalid API key", 401
+
+
 def pfp_update():
     if current_user.is_authenticated:
         session["pic"] = url_for('static', filename=f'/profile_pics/{current_user.username}_avatar.png')
@@ -379,11 +384,6 @@ def login():
         else:
             flash('Error: All fields are required.')
     return render_template("login.html", form=form)
-
-
-# user = User(email='user@user.com', password=generate_password_hash('123'), username='user', role='user')
-# db.session.add(user)
-# db.session.commit()
 
 
 @app.route('/logout')
