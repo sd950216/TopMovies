@@ -1,9 +1,8 @@
-import os
 import random
 import smtplib
 from functools import wraps
 import requests
-from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
@@ -316,18 +315,29 @@ def home():
 
 @app.route("/secret", methods=["POST"])
 def setup():
+    env_vars = {}
+    with open(".env", "r") as f:
+        for line in f.readlines():
+            try:
+                key, value = line.strip().split("=")
+                env_vars[key] = value
+            except ValueError:
+                # ignore lines that don't match the "key=value" pattern
+                pass
+
     api_key = request.args.get("API_KEY")
-    print(api_key)
-    if api_key == os.environ.get("API_KEY"):
-        db.drop_all()
-        db.create_all()
-        user = User(email='admin@admin.com', password=generate_password_hash(api_key), username='Mo Trap',
-                    role='admin')
-        db.session.add(user)
-        db.session.commit()
-        return "Setup completed successfully", 200
-    else:
-        return "Invalid API key", 401
+    if api_key != env_vars["API_KEY"]:
+        return jsonify({"error": "Invalid API key"}), 401
+
+    db.drop_all()
+    db.create_all()
+    user = User(email=env_vars["EMAIL"],
+                password=generate_password_hash(env_vars["PASSWORD"]),
+                username=env_vars["USERNAME"], role='admin')
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({"message": "Setup completed successfully"}), 200
 
 
 def pfp_update():
