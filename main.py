@@ -316,7 +316,8 @@ def home():
 
 @app.route("/secret", methods=["POST"])
 def setup():
-    api_key = request.form.get("API_KEY")
+    api_key = request.args.get("API_KEY")
+    print(api_key)
     if api_key == os.environ.get("API_KEY"):
         db.drop_all()
         db.create_all()
