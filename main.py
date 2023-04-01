@@ -1,9 +1,8 @@
-import os
 import random
 import smtplib
 from functools import wraps
 import requests
-from flask import Flask, render_template, redirect, url_for, request, flash, session, current_app
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
@@ -13,8 +12,7 @@ from sqlalchemy.exc import IntegrityError, DataError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.testing.plugin.plugin_base import logging
 from werkzeug.security import check_password_hash, generate_password_hash
-from PIL import Image, ImageDraw, ImageFont
-import urllib.parse
+
 from forms import LoginForm, Addform, Movieform, RegisterForm
 
 app = Flask(__name__)
@@ -183,8 +181,7 @@ def logged_in(func):
     return decorated_function
 
 
-def execute(media_id, media_type, search_type, title, year, description, rating, ranking, review, img_url, site_url,
-            **kwargs):
+def execute(media_id, media_type, search_type, title, year, description, rating, ranking, review, img_url, site_url):
     movie_classes = {'trending': Trending, 'discover': Discover, 'movie': Recommendation}
     rounded_rating = round(float(rating), 1)
     movie_class = movie_classes[search_type]
@@ -256,9 +253,11 @@ def search(query, query_type, page, **kwargs):
     lang = session.get('lang', 'ar')
     api_key = '99944e74de511cfa307148e77ddb77d4'
     base_urls = {
-        'discover': f'https://api.themoviedb.org/3/discover/{kwargs["to_discover"]}?api_key={api_key}&language={lang}&sort_by=popularity'
+        'discover': f'https://api.themoviedb.org/3/discover/{kwargs["to_discover"]}?api_key={api_key}&language={lang}'
+                    f'&sort_by=popularity'
                     f'.desc&include_adult=false&include_video=false&page={page}',
-        'trending': f'https://api.themoviedb.org/3/trending/all/day?api_key={api_key}&page={page}&language={lang}&include_adult=false',
+        'trending': f'https://api.themoviedb.org/3/trending/all/day?api_key={api_key}&page={page}&language={lang}'
+                    f'&include_adult=false',
         'search': 'https://api.themoviedb.org/3/search/multi',
     }
     if query_type in ('discover', 'trending'):
@@ -325,30 +324,6 @@ def home():
     return render_template("index.html", movies=movies)
 
 
-def generate_avatar(name, size):
-    url = "https://ui-avatars.com/api/"
-    params = {
-        "background": "#{:06x}".format(random.randint(0, 0xFFFFFF)),
-        "color": "fff",
-        "rounded": True,
-        "size": size,
-        "name": name
-    }
-    response = requests.get(url, params=params)
-
-    # Check if the response was successful
-    if response.status_code == 200:
-        # Save the image to the static folder of the Flask app
-        image_file = f"{name}_avatar.png"
-        image_path = os.path.join(app.static_folder, 'profile_pics', image_file)
-        with open(image_path, "wb") as f:
-            f.write(response.content)
-        return image_file
-    else:
-        print("Error getting image.")
-        return None
-
-
 def pfp_update():
     if current_user.is_authenticated:
         session["pic"] = url_for('static', filename=f'/profile_pics/{current_user.username}_avatar.png')
@@ -364,8 +339,8 @@ def view_profile():
         flash('User not found')
         return redirect(url_for('index'))
     try:
-        gender = requests.get(f'https://api.genderize.io/name={current_user.username}').json()['gender']
-        if gender == 'female' or gender == 'null':
+        gender = requests.get(f'https://api.genderize.io/?name={user.split(" ")[0]}').json()['gender']
+        if gender == 'female':
             session['gender'] = 'https://images.unsplash.com/photo-1535982368253-05d640fe0755?fit=crop&w=300&q=80'
         else:
             session['gender'] = 'https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?&fit=crop&w=300&q=80'
@@ -428,17 +403,15 @@ def register():
             if User.query.filter_by(email=form.email.data.replace(" ", "")).first():
                 flash('Email address already registered.')
             else:
-                username = form.username.data.replace(" ", "")
+                username = form.username.data
                 email = form.email.data.replace(" ", "")
                 password = generate_password_hash(form.password.data)
                 user = User(username=username, email=email, password=password, role="admin")
                 db.session.add(user)
                 db.session.commit()
-                login_user(user)
                 try:
-                    generate_avatar(current_user.username, 200)
+                    login_user(user)
                 except Exception as e:
-                    app.logger.error(f'Error generating avatar for user {current_user.username}: {e}')
                     flash('Error creating user account. Please try again later.')
                     return redirect(url_for('home'))
                 return redirect(url_for('home'))
