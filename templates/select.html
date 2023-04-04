@@ -25,15 +25,17 @@
         </div>
         <p class="overview">
             {{movie.overview}}        </p>
-
-                 {% if session['lang'] == 'en' %}
-                             <a href="{{ url_for('select',movie_id=movie.media_id,title=movie.name,media_type=movie.media_type,year=movie.year,rating=movie.vote_average,description=movie.overview,img_url=movie.poster_path) }}" class="button ">Add</a>
-        <a href="{{movie.site_url}}" class="button right "> More Info</a>
-    {% else %}
-             <a href="{{ url_for('select',movie_id=movie.media_id,title=movie.name,media_type=movie.media_type,year=movie.year,rating=movie.vote_average,description=movie.overview,img_url=movie.poster_path) }}" class="button ">أضف</a>
-        <a href="{{movie.site_url}}" class="button right "> More Info</a>
-
-    {% endif %}
+             {% if session['lang'] == 'en' %}
+                 {% if current_user.is_authenticated %}
+                     <a href="{{ url_for('select',movie_id=movie.media_id,title=movie.name,media_type=movie.media_type,year=movie.year,rating=movie.vote_average,description=movie.overview,img_url=movie.poster_path) }}" class="button ">Add</a>
+                 {% endif %}
+             <a href="{{movie.site_url}}" class="button right "> Info</a>
+             {% else %}
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('select',movie_id=movie.media_id,title=movie.name,media_type=movie.media_type,year=movie.year,rating=movie.vote_average,description=movie.overview,img_url=movie.poster_path) }}" class="button ">أضف</a>
+             {% endif %}
+            <a href="{{movie.site_url}}" class="button right "> تفاصيل</a>
+             {% endif %}
 
       </div>
 

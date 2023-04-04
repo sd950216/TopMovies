@@ -13,7 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.testing.plugin.plugin_base import logging
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from forms import LoginForm, Addform, Movieform, RegisterForm
+from forms import LoginForm, SearchForm, MovieRatingForm, RegisterForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -179,7 +179,6 @@ def execute(media_id, media_type, search_type, title, year, description, rating,
                             rating=rounded_rating, ranking=ranking,
                             review=review, img_url=img_url, site_url=site_url)
     try:
-        print(new_media)
         db.session.add(new_media)
         db.session.commit()
     except (IntegrityError, DataError) as e:
@@ -305,7 +304,7 @@ discover_global_var = 1
 trending_global_var = 1
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
     movies = sort_movies('movie')
     pfp_update()
@@ -334,7 +333,7 @@ def setup():
     user = User(email=env_vars["EMAIL"],
                 password=generate_password_hash(env_vars["PASSWORD"]),
                 username=env_vars["USERNAME"], role='admin')
-    db.session.add(user)
+    db.session.search()
     db.session.commit()
 
     return jsonify({"message": "Setup completed successfully"}), 200
@@ -383,7 +382,7 @@ def change_language(language):
 def login():
     form = LoginForm(request.form)
     if request.method == 'POST':
-        if form.validate():
+        if form.validate_on_submit():
             user = User.query.filter_by(email=form.email.data).first()
             if user and check_password_hash(user.password, form.password.data):
                 login_user(user)
@@ -391,8 +390,6 @@ def login():
                 return redirect(url_for('home'))
             else:
                 flash('Error: Invalid email or password.')
-        else:
-            flash('Error: All fields are required.')
     return render_template("login.html", form=form)
 
 
@@ -470,7 +467,7 @@ def trending(page):
 @app.route("/edit", methods=['GET', 'POST'])
 @login_required
 def edit():
-    form = Movieform()
+    form = MovieRatingForm()
     if request.method == 'POST' and form.validate():
         # UPDATE RECORD
         movie_id = request.args.get('id')
@@ -499,12 +496,13 @@ def delete():
     return render_template("delete.html", movie=movie_selected)
 
 
-@app.route('/add', methods=['GET', 'POST'])
-@login_required
-def add():
-    form = Addform()
-    if request.method == 'POST' and form.validate():
-        data = search(form.movie_title.data, 'multi', 1, to_discover='none')
+@app.route('/search', methods=['GET','POST'])
+def search_func():
+    form = SearchForm()
+    if request.method == 'POST' or form.validate_on_submit():
+        keyword = request.form.get('keyword')
+        print("keyword: %s" % keyword)
+        data = search(keyword, 'multi', 1, to_discover='none')
         temp_data = []
         # Loop through the list of dictionaries in reverse order
         for movie in data:
@@ -521,11 +519,8 @@ def add():
                     movie = "person"
             if movie != "person":
                 temp_data.append(movie)
-
         return render_template('select.html', data=temp_data)
-
-    return render_template("add.html", form=form)
-
+    return render_template('search.html', form=form)
 
 @app.route('/select', methods=['GET', 'POST'])
 @login_required

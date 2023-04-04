@@ -19,12 +19,12 @@ class RegisterForm(FlaskForm):
     submit = SubmitField("Register")
 
 
-class Movieform(FlaskForm):
+class MovieRatingForm(FlaskForm):
     # new_rating = StringField("Your New Rating Out Of 10 :", validators=[DataRequired()])
     new_rating = FloatField(label='Your New Rating Out Of 10 :', validators=[InputRequired(), NumberRange(min=0, max=10)])
     submit = SubmitField("Submit")
 
 
-class Addform(FlaskForm):
+class SearchForm(FlaskForm):
     movie_title = StringField("Enter movie title : ", validators=[DataRequired()])
     submit = SubmitField("search")

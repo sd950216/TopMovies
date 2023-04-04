@@ -26,6 +26,46 @@
 	margin: 3% 0;
 	text-align: center;
 }
+.box{
+    position: relative;
+}
+
+.search-input {
+    padding: 10px;
+    width: 42px;
+    height: 43px;
+    background: none;
+    border: 4px solid #fff;
+    border-radius: 50px;
+    box-sizing: border-box;
+	font-family: Comic Sans MS, serif;
+    font-size: 21px;
+    color: #ffffff;
+    transition: .5s;
+	outline: none;
+
+}
+.box:hover input{
+    width: 200px;
+    background: #3b3640;
+    border-radius: 10px;
+
+
+}
+.box i{
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(-50%,-50%);
+    font-size: 22px;
+    color: #fff;
+    transition: .2s;
+}
+.box:hover i{
+    opacity: 0;
+    z-index: -1;
+}
+
  .content {
 	 margin: 0 auto;
 	 text-align: center;
@@ -115,10 +155,22 @@
 		 padding: 0;
 		 margin-right: 0;
 	 }
-	 	 .middle{
+		 .middle{
 		 margin-bottom: 0;
 
 	 }
+	 .box{
+		 margin-top:2%;
+	 }
+	 .box i{
+		 right:92%;
+
+	 }
+	 .search-input{
+		 width: 100%;
+	 }
+
+
  }
 
  .front, .back {

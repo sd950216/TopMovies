@@ -23,12 +23,16 @@
       <img src="{{ session.pic}}" alt="..." height="36">
     </a>
   {% endif %}
-  <h1 class="heading">My Top Movies & Shows</h1>
+  <h1 class="heading">My Favourites </h1>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto">
+    <form class="d-flex" method="post" action="/search">
+        <input class="form-control me-2" name="keyword" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" title="search button" type="submit"><i class="fa fa-search"></i></button>
+      </form>
       {% if session['lang'] == 'en' %}
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
