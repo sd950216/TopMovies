@@ -325,6 +325,7 @@ def setup():
                 pass
 
     api_key = request.args.get("API_KEY")
+    print(api_key)
     if api_key != env_vars["API_KEY"]:
         return jsonify({"error": "Invalid API key"}), 401
 
@@ -333,7 +334,7 @@ def setup():
     user = User(email=env_vars["EMAIL"],
                 password=generate_password_hash(env_vars["PASSWORD"]),
                 username=env_vars["USERNAME"], role='admin')
-    db.session.search()
+    db.session.add(user)
     db.session.commit()
 
     return jsonify({"message": "Setup completed successfully"}), 200
