@@ -239,7 +239,7 @@ def filter_data(json_list, **kwargs):
 
 def search(query, query_type, page, **kwargs):
     lang = session.get('lang', 'ar')
-    api_key = '99944e74de511cfa307148e77ddb77d4'
+    api_key = os.environ.get('api_key')
     base_urls = {
         'discover': f'https://api.themoviedb.org/3/discover/{kwargs["to_discover"]}?api_key={api_key}&language={lang}'
                     f'&sort_by=popularity'
