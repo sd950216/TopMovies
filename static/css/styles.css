@@ -12,11 +12,8 @@
 	 margin: 0;
 	 padding: 0;
 	 height: 100vh;
-	 background-attachment: fixed;
-	   background-image: url('/static/background.png');
-	  background-repeat: no-repeat;
-	  background-size: cover;
-	 	 color: #dee2e6;
+  background: radial-gradient(circle at center, #008888, #000033);
+	 color: #dee2e6;
 
 }
 .large {
