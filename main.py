@@ -273,6 +273,7 @@ def search(query, query_type, page, **kwargs):
             'media_id': json_input.get('id', None),
         }
         filtered_data.append(filtered_dict)
+
     return filtered_data
 
 
@@ -305,14 +306,6 @@ discover_global_var = 1
 trending_global_var = 1
 
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    movies = sort_movies('movie')
-    pfp_update()
-
-    return render_template("index.html", movies=movies)
-
-
 @app.route("/secret", methods=["POST"])
 def setup():
     env_vars = {}
@@ -328,7 +321,7 @@ def setup():
     api_key = request.args.get("api_key")
 
     if api_key != env_vars["api_key"]:
-        return jsonify({"error": "Invalid API key"}), 401
+        return jsonify({"error": f"Invalid API key {env_vars}"}), 401
 
     db.drop_all()
     db.create_all()
@@ -337,7 +330,7 @@ def setup():
                 username=env_vars["USERNAME"], role='admin')
     db.session.add(user)
     db.session.commit()
-
+    os.environ["api_key"] = api_key
     return jsonify({"message": "Setup completed successfully"}), 200
 
 
@@ -345,7 +338,7 @@ def pfp_update():
     if current_user.is_authenticated:
         session["pic"] = url_for('static', filename=f'/profile_pics/{current_user.username}_avatar.png')
     else:
-        session['pic'] = 'https://telegra.ph/file/5f61b3e51d033ecbbe32a.png'
+        session['pic'] = 'https://ui-avatars.com//api/?background=%23285894&color=fff&rounded=True&size=200&name=MT'
 
 
 @app.route('/profile')
@@ -377,6 +370,14 @@ def change_language(language):
         return redirect(url_for('home'))
 
     return redirect(previous_url)
+
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    movies = sort_movies('movie')
+    pfp_update()
+
+    return render_template("index.html", movies=movies)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -498,7 +499,7 @@ def delete():
     return render_template("delete.html", movie=movie_selected)
 
 
-@app.route('/search', methods=['GET','POST'])
+@app.route('/search', methods=['GET', 'POST'])
 def search_func():
     form = SearchForm()
     if request.method == 'POST' or form.validate_on_submit():
@@ -523,6 +524,7 @@ def search_func():
                 temp_data.append(movie)
         return render_template('select.html', data=temp_data)
     return render_template('search.html', form=form)
+
 
 @app.route('/select', methods=['GET', 'POST'])
 @login_required
