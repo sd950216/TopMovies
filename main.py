@@ -396,14 +396,6 @@ def login():
     return render_template("login.html", form=form)
 
 
-@app.route('/logout')
-def logout():
-    if current_user.is_authenticated:
-        logout_user()
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
-
-
 @app.route('/register', methods=['GET', 'POST'])
 @logged_in
 def register():
@@ -464,24 +456,33 @@ def trending(page):
     # if search_type == "discover":
     update_database('trending', page=page, to_discover='none')
     movies = sort_movies('trending')
+    print(movies)
     return render_template("trending.html", movies=movies, page_number=trending_global_var)
 
 
 @app.route("/edit", methods=['GET', 'POST'])
 @login_required
 def edit():
-    form = MovieRatingForm()
-    if request.method == 'POST' and form.validate():
-        # UPDATE RECORD
-        movie_id = request.args.get('id')
-        movie_to_update = Recommendation.query.get(movie_id)
-        # movie_to_update.rating = form.new_rating.data
-        movie_to_update.rating = form.new_rating.data
-        db.session.commit()
-        return redirect(url_for('home'))
     movie_id = request.args.get('id')
     movie_selected = Recommendation.query.get(movie_id)
-    return render_template("edit.html", movie=movie_selected, form=form)
+    return render_template("edit.html", movie=movie_selected)
+
+
+@app.route('/update-rating', methods=['POST'])
+def update_rating():
+    movie_id = request.json.get('movieId')
+    new_rating = request.json.get('rating')
+
+    movie_to_update = Recommendation.query.get(movie_id)
+    if movie_to_update:
+        movie_to_update.rating = new_rating
+        db.session.commit()
+        return jsonify({'message': 'Rating updated successfully'})
+    else:
+        print(new_rating)
+        print(movie_id)
+        print(movie_to_update)
+        return jsonify({'error': 'Failed to update rating'}), 400
 
 
 @app.route('/delete', methods=['GET', 'POST'])
@@ -553,6 +554,14 @@ def select():
 @login_required
 def cancel():
     return redirect(url_for('home'))
+
+
+@app.route('/logout')
+def logout():
+    if current_user.is_authenticated:
+        logout_user()
+        return redirect(url_for('home'))
+    return redirect(url_for('login'))
 
 
 if __name__ == '__main__':

@@ -1,28 +1,129 @@
-{% include "header.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Movie Rating Modification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+  background: radial-gradient(circle at center, #008888, #000033);
+      padding: 20px;
+    }
 
+    .container {
+      max-width: 400px;
+      margin: 12% auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
 
-{% block content %}
-    {% if session['lang'] == 'en' %}
-        <h1 class="Edit-heading">Recommendation Title</h1>
+    h1 {
+      text-align: center;
+      font-weight: bold;
+      font-size: 28px;
+    }
 
-<div class="content">
-    <p class="description">Edit Recommendation Rating</p>
-    {% else %}
-            <h1 class="Edit-heading">تعديل التقيم</h1>
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-<div class="content">
-    {% endif %}
-          {{ form.csrf_token }}
-        {{ wtf.quick_form(form,button_map={'submit': 'right'}) }}
-        <a class="btn btn-default cancel" href="{{ url_for('cancel') }}" role="button">Cancel </a>
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
 
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
 
+    .update-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      text-align: center;
+      background-color: green;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
 
+    .btn-cancel {
+      background-color: red;
+      display: block;
+      padding: 10px;
+      text-align: center;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
 
+    .btn-cancel:hover {
+        background-color: #DC3545;
+        color: #fff;
 
-</div>
+    }
+    .update-btn:hover{
+          background-color: #4caf50;
+        color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Modify Movie Rating</h1>
+    <div class="form-group">
+      <label for="rating">Rating:</label>
+      <input type="number" value="{{ movie.rating }}" id="rating" min="1" max="10" step="0.1">
+    </div>
+    <button class="update-btn" onclick="updateRating()">Update Rating</button>
+    <a href="/" class="btn btn-cancel">Cancel</a>
+  </div>
 
-{% endblock %}
-{% include "footer.html" %}
+  <script>
+       function updateRating() {
+      var ratingInput = document.getElementById('rating');
+      var rating = ratingInput.value;
+      // Retrieve the ID value from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const movieId = urlParams.get('id');
+
+      // Perform any additional validation or processing here
+
+      // Send the rating data to the server using AJAX
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/update-rating', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            alert('Rating updated successfully!');
+            // Perform any additional actions or redirect the user
+              window.location.href = '/';
+
+          } else {
+            alert('Failed to update rating.');
+
+          }
+        }
+      };
+      xhr.send(JSON.stringify({ rating: rating,movieId: movieId }));
+    }
+
+    function cancel() {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>
