@@ -166,7 +166,9 @@
 	 .search-input{
 		 width: 100%;
 	 }
-
+	#searchbtn{
+		margin-top:1%;
+	}
 
  }
 
@@ -356,4 +358,15 @@
 .navbar {
 	padding-top: .1rem;
 	padding-bottom:.2rem ;
+}
+.control-label {
+	margin: 10px 0;
+}
+
+.form-group input[type="password"] {
+	margin-bottom: 20px;
+}
+
+.form input[type="submit"] {
+	margin-bottom: 20px;
 }

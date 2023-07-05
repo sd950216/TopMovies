@@ -4,33 +4,41 @@
 {% block content %}
 
   <!-- Page Header -->
-  <header class="masthead" >
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <div class="page-heading">
-            <h1>Log In</h1>
-            <span class="subheading">Welcome Back!</span>
-          </div>
+<header class="masthead">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="page-heading">
+          <h1>Register</h1>
+          <span class="subheading">Create an Account</span>
         </div>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <div class="container">
-    <div class="row">
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  <div class="alert alert-light">
+                    <strong class="text-danger">{{ messages[0] }}</strong>
+                  </div>
+                {% endif %}
+              {% endwith %}
+          <div class="card border-0"  style="background-color: rgba(52, 58, 64, .6);cursor: default;">
+        <div class="card-body">
+          {{ wtf.quick_form(form, button_map={"submit": "primary"}) }}
 
-      <div class="col-lg-8 col-md-10 mx-auto content">
-
-        {{ wtf.quick_form(form, button_map={"submit": "primary"}) }}
-
-                        <p class=error><strong>{{ get_flashed_messages()[0] }}</strong></p>
-
+        </div>
       </div>
     </div>
   </div>
+</div>
+s
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 {% endblock %}
+{% include "footer.html" %}

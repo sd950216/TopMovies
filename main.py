@@ -2,6 +2,7 @@ import os
 import random
 import smtplib
 from functools import wraps
+
 import requests
 from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
 from flask_bootstrap import Bootstrap
@@ -14,7 +15,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.testing.plugin.plugin_base import logging
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from forms import LoginForm, SearchForm, MovieRatingForm, RegisterForm
+from forms import LoginForm, SearchForm, RegisterForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -46,6 +47,7 @@ class User(db.Model, UserMixin, Base):
     recommendations = db.relationship('Recommendation', backref='user', lazy=True)
 
     def __init__(self, email, password, username, role):
+        super().__init__()
         self.email = email
         self.password = password
         self.username = username
@@ -84,6 +86,7 @@ class Recommendation(db.Model, Base):
 
     def __init__(self, user_id, media_id, media_type, title, year, description, rating, ranking, img_url, site_url,
                  review):
+        super().__init__()
         self.user_id = user_id
         self.media_id = media_id
         self.media_type = media_type
@@ -538,9 +541,9 @@ def select():
     media_type = request.args.get("media_type")
     media_id = request.args.get("movie_id")
     site_url = f"https://www.themoviedb.org/{media_type}/{media_id}-{movie_title}"
-    rec = Recommendation(user_id=current_user.id, media_id=media_id, media_type=media_type, title=movie_title,
-                         year=movie_year,
-                         description=movie_description, rating=movie_rating, ranking=10, img_url=movie_img_url,
+    rec = Recommendation(user_id=current_user.id, media_id=int(media_id), media_type=media_type, title=movie_title,
+                         year=int(movie_year),
+                         description=movie_description, rating=float(movie_rating), ranking=10, img_url=movie_img_url,
                          site_url=site_url, review="review")
     db.session.add(rec)
     db.session.commit()

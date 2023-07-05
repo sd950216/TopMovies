@@ -4,7 +4,7 @@
 {% block content %}
 
   <!-- Page Header -->
-  <header class="masthead" >
+  <header class="masthead">
     <div class="overlay"></div>
     <div class="container">
       <div class="row">
@@ -18,19 +18,33 @@
     </div>
   </header>
 
-  <div class="container">
-    <div class="row">
+  <section class="py-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+                          {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                  <div class="alert alert-light">
+                    <strong class="text-danger">{{ messages[0] }}</strong>
+                  </div>
+                {% endif %}
+              {% endwith %}
+          <div class="card border-0"  style="background-color: rgba(52, 58, 64, .6);cursor: default;">
+            <div class="card-body">
+              <h5 class="card-title">Login</h5>
 
-      <div class="col-lg-8 col-md-10 mx-auto content">
 
-        {{ wtf.quick_form(form, button_map={"submit": "primary"}) }}
 
-                        <p class=error><strong>{{ get_flashed_messages()[0] }}</strong></p>
+              {{ wtf.quick_form(form, button_map={"submit": "primary"}) }}
 
+              <p class="card-text">Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+              <p class="card-text"><a href="{{ url_for('register') }}">Forgot Password</a></p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-
+  </section>
 
 {% endblock %}
 {% include "footer.html" %}
