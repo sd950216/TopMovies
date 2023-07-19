@@ -541,12 +541,20 @@ def select():
     media_type = request.args.get("media_type")
     media_id = request.args.get("movie_id")
     site_url = f"https://www.themoviedb.org/{media_type}/{media_id}-{movie_title}"
-    rec = Recommendation(user_id=current_user.id, media_id=int(media_id), media_type=media_type, title=movie_title,
-                         year=int(movie_year),
-                         description=movie_description, rating=float(movie_rating), ranking=10, img_url=movie_img_url,
-                         site_url=site_url, review="review")
-    db.session.add(rec)
-    db.session.commit()
+    try:
+        rec = Recommendation(user_id=current_user.id, media_id=int(media_id), media_type=media_type, title=movie_title,
+                             year=int(movie_year),
+                             description=movie_description, rating=float(movie_rating), ranking=10, img_url=movie_img_url,
+                             site_url=site_url, review="review")
+        db.session.add(rec)
+        db.session.commit()
+    except:
+        rec = Recommendation(user_id=current_user.id, media_id=int(media_id), media_type=media_type, title=movie_title,
+                             year=int(movie_year.split("-")[0]),
+                             description=movie_description, rating=float(movie_rating), ranking=10, img_url=movie_img_url,
+                             site_url=site_url, review="review")
+        db.session.add(rec)
+        db.session.commit()
     movie_selected = Recommendation.query.filter_by(user_id=current_user.id, title=movie_title).first()
     # movie_selected = Recommendation.query.filter_by(title=movie_title).first()
     movie_id = movie_selected.id
