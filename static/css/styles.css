@@ -140,6 +140,9 @@
 	.content{
 		max-width: 80%;
 	}
+	#searchbtn{
+	margin-top: 10px;
+}
 }
  @media screen and (max-width: 575px) {
 	 .card {
@@ -166,9 +169,9 @@
 	 .search-input{
 		 width: 100%;
 	 }
-	#searchbtn{
-		margin-top:1%;
-	}
+#searchbtn{
+	margin-top: 10px;
+}
 
  }
 
@@ -384,4 +387,7 @@
 	bottom: 50px;
 	cursor: default;
 
+}
+.navbar-toggler{
+	padding: 5px 6px;
 }

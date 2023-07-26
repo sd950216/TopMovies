@@ -1,0 +1,38 @@
+{% include "header.html"  %}
+{% block content %}
+  <!-- Your form goes here -->
+  <div class="container mt-5">
+    <form action="/edit-profile" method="post">
+      <div class="form-group">
+        <label for="job">Current Job:</label>
+        <input type="text" class="form-control" id="job" name="job" maxlength="250" required placeholder="Please enter your current job">
+      </div>
+      <div class="form-group">
+        <label for="site">Website:</label>
+        <input type="url" class="form-control" id="site" name="site" maxlength="250" placeholder="https://www.example.com" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <textarea class="form-control" id="description" name="description" placeholder="Write a small description about yourself" maxlength="500" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="fb_url">Facebook Username:</label>
+        <input type="text" class="form-control" id="fb_url" name="fb_url" placeholder="Your Facebook username" maxlength="250" required>
+      </div>
+      <div class="form-group">
+        <label for="twitter_url">Twitter Username:</label>
+        <input type="text" class="form-control" id="twitter_url" name="twitter_url" placeholder="Your Twitter username" maxlength="250" required>
+      </div>
+      <div class="form-group">
+        <label for="insta_url">Instagram Username:</label>
+        <input type="text" class="form-control" id="insta_url" name="insta_url" placeholder="Your Instagram username" maxlength="250" required>
+      </div>
+      <div class="form-group">
+        <label for="youtube_url">YouTube Username:</label>
+        <input type="text" class="form-control" id="youtube_url" name="youtube_url" placeholder="Your YouTube channel username" maxlength="250" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+{% endblock %}
+{% include "footer.html" %}

@@ -43,14 +43,30 @@ class User(db.Model, UserMixin, Base):
     email = db.Column(db.String(250), unique=True)
     password = db.Column(db.String(250))
     username = db.Column(db.String(250))
+    job = db.Column(db.String(250))
+    site = db.Column(db.String(250))
+    description = db.Column(db.String(101))
+    fb_url = db.Column(db.String(250))
+    twitter_url = db.Column(db.String(250))
+    insta_url = db.Column(db.String(250))
+    youtube_url = db.Column(db.String(250))
+
     role = db.Column(db.String(50))
     recommendations = db.relationship('Recommendation', backref='user', lazy=True)
 
-    def __init__(self, email, password, username, role):
+    def __init__(self, email, password, username, job, site, description, fb_url, twitter_url, insta_url, youtube_url,
+                 role):
         super().__init__()
         self.email = email
         self.password = password
         self.username = username
+        self.job = job
+        self.site = site
+        self.description = description
+        self.fb_url = fb_url
+        self.twitter_url = twitter_url
+        self.insta_url = insta_url
+        self.youtube_url = youtube_url
         self.role = role
 
     @staticmethod
@@ -324,13 +340,17 @@ def setup():
     api_key = request.args.get("api_key")
 
     if api_key != env_vars["api_key"]:
-        return jsonify({"error": f"Invalid API key {env_vars}"}), 401
+        return jsonify({"error": f"Invalid API key"}), 401
 
     db.drop_all()
     db.create_all()
-    user = User(email=env_vars["EMAIL"],
+    user = User(email="admin@admin.com",
                 password=generate_password_hash(env_vars["PASSWORD"]),
-                username=env_vars["USERNAME"], role='admin')
+                username="motrap2002", job="Software Engineer", site="example.com",
+                description="We are hiring a skilled ""Software Engineer",
+                fb_url="facebook.com/example", twitter_url="twitter.com/example", insta_url="instagram.com/example",
+                youtube_url="youtube.com/example", role="admin")
+
     db.session.add(user)
     db.session.commit()
     os.environ["api_key"] = api_key
@@ -347,12 +367,12 @@ def pfp_update():
 @app.route('/profile')
 @login_required
 def view_profile():
-    user = current_user.username
+    user = current_user
     if not user:
         flash('User not found')
         return redirect(url_for('index'))
     try:
-        gender = requests.get(f'https://api.genderize.io/?name={user.split(" ")[0]}').json()['gender']
+        gender = requests.get(f'https://api.genderize.io/?name={user.username.split(" ")[0]}').json()['gender']
         if gender == 'female':
             session['gender'] = 'https://images.unsplash.com/photo-1535982368253-05d640fe0755?fit=crop&w=300&q=80'
         else:
@@ -360,6 +380,25 @@ def view_profile():
     except:
         session['gender'] = 'https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?&fit=crop&w=300&q=80'
     return render_template('profile.html')
+
+
+@app.route('/edit-profile', methods=['Get', 'POST'])
+@login_required
+def edit_profile():
+    user = User.query.get(current_user.id)  # Retrieve the user by their primary key (user_id)
+
+    if request.method == 'POST':
+        user.job = request.form.get('job')
+        user.site = request.form.get('site')
+        user.description = request.form.get('description')
+        user.fb_url = request.form.get('fb_url')
+        user.twitter_url = request.form.get('twitter_url')
+        user.insta_url = request.form.get('insta_url')
+        user.youtube_url = request.form.get('youtube_url')
+        db.session.commit()
+        flash('Your profile has been updated')
+        return redirect(url_for('view_profile'))
+    return render_template('edit_profile.html')
 
 
 @app.route('/<language>')
@@ -544,14 +583,16 @@ def select():
     try:
         rec = Recommendation(user_id=current_user.id, media_id=int(media_id), media_type=media_type, title=movie_title,
                              year=int(movie_year),
-                             description=movie_description, rating=float(movie_rating), ranking=10, img_url=movie_img_url,
+                             description=movie_description, rating=float(movie_rating), ranking=10,
+                             img_url=movie_img_url,
                              site_url=site_url, review="review")
         db.session.add(rec)
         db.session.commit()
     except:
         rec = Recommendation(user_id=current_user.id, media_id=int(media_id), media_type=media_type, title=movie_title,
                              year=int(movie_year.split("-")[0]),
-                             description=movie_description, rating=float(movie_rating), ranking=10, img_url=movie_img_url,
+                             description=movie_description, rating=float(movie_rating), ranking=10,
+                             img_url=movie_img_url,
                              site_url=site_url, review="review")
         db.session.add(rec)
         db.session.commit()
