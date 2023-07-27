@@ -4,7 +4,7 @@ import smtplib
 from functools import wraps
 
 import requests
-from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify
+from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify, abort
 from flask_bootstrap import Bootstrap
 from flask_login import UserMixin, login_user, LoginManager, current_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
@@ -382,6 +382,37 @@ def view_profile():
     return render_template('profile.html')
 
 
+@app.route('/user/<username>')
+def user_profile(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        abort(404)
+
+    try:
+        gender = requests.get(f'https://api.genderize.io/?name={username}').json()['gender']
+        if gender == 'female':
+            session['gender'] = 'https://images.unsplash.com/photo-1535982368253-05d640fe0755?fit=crop&w=300&q=80'
+        else:
+            session['gender'] = 'https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?&fit=crop&w=300&q=80'
+    except:
+        session['gender'] = 'https://images.unsplash.com/photo-1581803118522-7b72a50f7e9f?&fit=crop&w=300&q=80'
+
+    return render_template('user.html', username=username, user=user)
+
+
+@app.route('/recommendations/<username>')
+def user_recommendations(username):
+    user = User.query.filter_by(username=username).first()
+    recommendations = Recommendation.query.filter_by(user_id=user.id).order_by(Recommendation.rating.desc()).all()
+
+    for i, movie in enumerate(recommendations):
+        movie.ranking = i + 1
+
+    if not user:
+        abort(404)
+    return render_template('recommendations.html', username=username, user=user, movies=recommendations)
+
+
 @app.route('/edit-profile', methods=['Get', 'POST'])
 @login_required
 def edit_profile():
@@ -389,7 +420,7 @@ def edit_profile():
 
     if request.method == 'POST':
         user.job = request.form.get('job')
-        user.site = request.form.get('site')
+        user.site = f"https://topmovies.pythonanywhere.com/user/{user.username}"
         user.description = request.form.get('description')
         user.fb_url = request.form.get('fb_url')
         user.twitter_url = request.form.get('twitter_url')

@@ -1,0 +1,64 @@
+{% include "header.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+    <section id="features">
+    <div class="container-fluid">
+      <div class="row mid">
+      {% for movie in movies %}
+        <div class="col-lg-2 col-md-6 col-sm-6  middle">
+  <div class="card" >
+    <div class="front" style="background-image: url('{{ movie.img_url }}');">
+        <p class="large">{{ movie.ranking }}</p>
+    </div>
+    <div class="back">
+     <div>
+      <div class="title">{{ movie.title }} <span class="release_date">({{ movie.year }})</span>
+      </div>
+        <div class="rating">
+            <label>{{ movie.rating }}</label>
+          <i class="fas fa-star star"></i>
+        </div>
+        <p class="overview">
+            {{movie.description}}        </p>
+
+
+         {% if session['lang'] == 'en' %}
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('edit', id=movie.id) }}" class="btn btn-primary">Update</a>
+        <a href="{{ url_for('delete', id=movie.id) }}" class="btn btn-danger">Delete</a>
+    {% else %}
+    <a href="{{ movie.site_url }}" class="btn btn-primary">More</a>
+        {% endif %}
+{% else %}
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('edit', id=movie.id) }}" class="btn btn-primary">تحديث</a>
+        <a href="{{ url_for('delete', id=movie.id) }}" class="btn btn-danger">حذف</a>
+    {% else %}
+    <a href="{{ movie.site_url }}" class="btn btn-primary">المزيد</a>
+{% endif %}
+     {% endif %}
+
+
+
+
+
+      </div>
+
+      </div>
+    </div>
+        </div>
+             {% endfor %}
+
+      </div>
+    </div>
+  </section>
+
+
+
+  </div>
+
+
+{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>

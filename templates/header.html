@@ -31,7 +31,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ms-auto">
     <form class="d-flex" id="searchbtn" method="post" action="/search">
-        <input class="form-control me-2" name="keyword" type="search" placeholder="Search" aria-label="Search">
+        <input class="form-control me-2" name="keyword" type="search" placeholder="Search" aria-label="Search" required>
         <button class="btn btn-outline-success" title="search button" type="submit"><i class="fa fa-search"></i></button>
       </form>
       {% if session['lang'] == 'en' %}
